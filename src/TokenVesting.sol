@@ -16,12 +16,7 @@ contract TokenVesting is Ownable {
 
     event TokensReleased(address beneficiary, uint256 amount);
 
-    constructor(
-        address _token,
-        address _beneficiary,
-        uint256 _start,
-        uint256 _duration
-    ) Ownable(msg.sender) {
+    constructor(address _token, address _beneficiary, uint256 _start, uint256 _duration) Ownable(msg.sender) {
         require(_beneficiary != address(0), "Beneficiary is zero address");
         token = IERC20(_token);
         beneficiary = _beneficiary;

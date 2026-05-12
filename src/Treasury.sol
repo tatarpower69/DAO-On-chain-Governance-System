@@ -10,7 +10,7 @@ contract Treasury is Ownable {
     receive() external payable {}
 
     function withdrawEth(address payable to, uint256 amount) external onlyOwner {
-        (bool success, ) = to.call{value: amount}("");
+        (bool success,) = to.call{value: amount}("");
         require(success, "Transfer failed");
     }
 

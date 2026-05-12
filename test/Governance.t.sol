@@ -29,21 +29,9 @@ contract GovernanceTest is Test {
     uint256 constant VESTING_DURATION = 365 days;
 
     function setUp() public {
+        govToken = new GovernanceToken(INITIAL_SUPPLY, team, treasuryAddr, airdrop, liquidity);
 
-        govToken = new GovernanceToken(
-            INITIAL_SUPPLY,
-            team,
-            treasuryAddr,
-            airdrop,
-            liquidity
-        );
-
-        vesting = new TokenVesting(
-            address(govToken),
-            team,
-            block.timestamp,
-            VESTING_DURATION
-        );
+        vesting = new TokenVesting(address(govToken), team, block.timestamp, VESTING_DURATION);
 
         address[] memory proposers = new address[](1);
         address[] memory executors = new address[](1);
@@ -73,7 +61,7 @@ contract GovernanceTest is Test {
         govToken.delegate(voter1);
         vm.prank(voter2);
         govToken.delegate(voter2);
-        
+
         vm.roll(block.number + 1);
     }
 
@@ -113,12 +101,9 @@ contract GovernanceTest is Test {
         assertEq(govToken.balanceOf(team), INITIAL_SUPPLY * 40 / 100);
     }
 
-    function testPermit() public {
-
-    }
+    function testPermit() public {}
 
     function testFullProposalLifecycle() public {
-
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);
         bytes[] memory calldatas = new bytes[](1);
@@ -168,7 +153,6 @@ contract GovernanceTest is Test {
     }
 
     function testTreasuryTransfer() public {
-
         vm.deal(address(treasury), 10 ether);
 
         address recipient = address(99);
@@ -178,7 +162,7 @@ contract GovernanceTest is Test {
         targets[0] = address(treasury);
         values[0] = 0;
         calldatas[0] = abi.encodeWithSignature("withdrawEth(address,uint256)", recipient, 5 ether);
-        
+
         vm.prank(voter1);
         uint256 proposalId = governor.propose(targets, values, calldatas, "Withdraw 5 ETH");
 
@@ -186,7 +170,7 @@ contract GovernanceTest is Test {
         vm.prank(voter1);
         governor.castVote(proposalId, 1);
         vm.roll(block.number + governor.votingPeriod() + 1);
-        
+
         governor.queue(targets, values, calldatas, keccak256(bytes("Withdraw 5 ETH")));
         vm.warp(block.timestamp + 2 days + 1);
         governor.execute(targets, values, calldatas, keccak256(bytes("Withdraw 5 ETH")));
@@ -201,7 +185,7 @@ contract GovernanceTest is Test {
         targets[0] = address(box);
         values[0] = 0;
         calldatas[0] = abi.encodeWithSignature("store(uint256)", 99);
-        
+
         vm.prank(voter1);
         uint256 proposalId = governor.propose(targets, values, calldatas, "Defeated Proposal");
 
@@ -210,7 +194,7 @@ contract GovernanceTest is Test {
         governor.castVote(proposalId, 0);
 
         vm.roll(block.number + governor.votingPeriod() + 1);
-        
+
         vm.expectRevert();
         governor.queue(targets, values, calldatas, keccak256(bytes("Defeated Proposal")));
     }
@@ -222,7 +206,7 @@ contract GovernanceTest is Test {
         targets[0] = address(box);
         values[0] = 0;
         calldatas[0] = abi.encodeWithSignature("store(uint256)", 11);
-        
+
         vm.prank(voter1);
         uint256 proposalId = governor.propose(targets, values, calldatas, "Cancel Proposal");
 
@@ -239,7 +223,7 @@ contract GovernanceTest is Test {
         targets[0] = address(box);
         values[0] = 0;
         calldatas[0] = abi.encodeWithSignature("store(uint256)", 22);
-        
+
         vm.prank(voter1);
         uint256 proposalId = governor.propose(targets, values, calldatas, "Abstain Proposal");
 
@@ -271,7 +255,7 @@ contract GovernanceTest is Test {
         bytes[] memory calldatas = new bytes[](1);
         targets[0] = address(box);
         calldatas[0] = abi.encodeWithSignature("store(uint256)", 33);
-        
+
         vm.prank(voter1);
         governor.propose(targets, values, calldatas, "Early Queue");
 
@@ -286,7 +270,7 @@ contract GovernanceTest is Test {
         targets[0] = address(box);
         calldatas[0] = abi.encodeWithSignature("store(uint256)", 44);
         string memory desc = "Early Execute";
-        
+
         vm.prank(voter1);
         uint256 proposalId = governor.propose(targets, values, calldatas, desc);
 
@@ -294,7 +278,7 @@ contract GovernanceTest is Test {
         vm.prank(voter1);
         governor.castVote(proposalId, 1);
         vm.roll(block.number + governor.votingPeriod() + 1);
-        
+
         governor.queue(targets, values, calldatas, keccak256(bytes(desc)));
 
         vm.expectRevert();
@@ -302,7 +286,6 @@ contract GovernanceTest is Test {
     }
 
     function testTreasuryWithdrawToken() public {
-
         vm.prank(treasuryAddr);
         govToken.transfer(address(treasury), 1000e18);
 
@@ -311,8 +294,9 @@ contract GovernanceTest is Test {
         uint256[] memory values = new uint256[](1);
         bytes[] memory calldatas = new bytes[](1);
         targets[0] = address(treasury);
-        calldatas[0] = abi.encodeWithSignature("withdrawToken(address,address,uint256)", address(govToken), recipient, 500e18);
-        
+        calldatas[0] =
+            abi.encodeWithSignature("withdrawToken(address,address,uint256)", address(govToken), recipient, 500e18);
+
         vm.prank(voter1);
         uint256 proposalId = governor.propose(targets, values, calldatas, "Withdraw Tokens");
 
@@ -320,7 +304,7 @@ contract GovernanceTest is Test {
         vm.prank(voter1);
         governor.castVote(proposalId, 1);
         vm.roll(block.number + governor.votingPeriod() + 1);
-        
+
         governor.queue(targets, values, calldatas, keccak256(bytes("Withdraw Tokens")));
         vm.warp(block.timestamp + 2 days + 1);
         governor.execute(targets, values, calldatas, keccak256(bytes("Withdraw Tokens")));

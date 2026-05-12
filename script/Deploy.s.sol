@@ -16,29 +16,13 @@ contract DeployDAO is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        GovernanceToken govToken = new GovernanceToken(
-            100_000_000e18,
-            deployer,
-            deployer,
-            deployer,
-            deployer
-        );
+        GovernanceToken govToken = new GovernanceToken(100_000_000e18, deployer, deployer, deployer, deployer);
 
-        TokenVesting vesting = new TokenVesting(
-            address(govToken),
-            deployer,
-            block.timestamp,
-            365 days
-        );
+        TokenVesting vesting = new TokenVesting(address(govToken), deployer, block.timestamp, 365 days);
 
         address[] memory proposers = new address[](0);
         address[] memory executors = new address[](0);
-        TimelockController timelock = new TimelockController(
-            2 days,
-            proposers,
-            executors,
-            deployer
-        );
+        TimelockController timelock = new TimelockController(2 days, proposers, executors, deployer);
 
         MyGovernor governor = new MyGovernor(govToken, timelock);
 
