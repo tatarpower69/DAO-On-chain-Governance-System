@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyDAO Governance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>MyDAO Governance</h1>
+
+        <div id="wallet-section" class="card">
+            <button id="connect-wallet">Connect Wallet</button>
+            <p id="wallet-address">Address: Not connected</p>
+        </div>
+
+        <div id="stats-section" class="card hidden">
+            <h3>Token Stats</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Balance</span>
+                    <span class="stat-value" id="token-balance">0</span>
+                    <span class="stat-unit">GTK</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Voting Power</span>
+                    <span class="stat-value" id="voting-power">0</span>
+                </div>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Delegated To: <span id="delegated-to">None</span></p>
+            <div class="input-group">
+                <input type="text" id="delegate-address" placeholder="Delegate to address (or self)">
+                <button id="delegate-btn">Delegate</button>
+            </div>
+        </div>
+
+        <div id="create-proposal-section" class="card hidden">
+            <h3>Create Proposal</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Creates a governance proposal to store a value in the Box contract via DAO vote.</p>
+            <div class="input-group">
+                <input type="number" id="proposal-value" placeholder="Value to store (e.g. 42)">
+                <button id="propose-btn">Propose</button>
+            </div>
+        </div>
+
+        <div id="proposals-section" class="card hidden">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>Proposals</h3>
+                <button id="refresh-btn" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">↻ Refresh</button>
+            </div>
+            <div id="proposals-list">
+                <p>No proposals yet.</p>
+            </div>
+        </div>
+
+        <div id="status-bar" class="hidden">
+            <p id="status-text"></p>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
